@@ -124,6 +124,38 @@ const DayIllustration = ({ id }: { id: number }) => {
   }
 };
 
+const MapAmbientDecor = () => (
+  <div className="pointer-events-none absolute inset-0 overflow-hidden">
+    <div className="absolute top-8 left-4 md:left-10 opacity-[0.20] animate-float-slow">
+      <Sun className="w-14 h-14 md:w-20 md:h-20 text-yellow-300" />
+    </div>
+
+    <div className="absolute top-16 right-6 md:right-16 opacity-[0.35] animate-drift">
+      <Cloud className="w-16 h-16 md:w-24 md:h-24 text-white" />
+    </div>
+
+    <div className="absolute top-[28%] left-[6%] opacity-[0.18] animate-float-reverse">
+      <Waves className="w-12 h-12 md:w-16 md:h-16 text-blue-300" />
+    </div>
+
+    <div className="absolute top-[36%] right-[8%] opacity-[0.18] animate-float-slow">
+      <TreePine className="w-12 h-12 md:w-16 md:h-16 text-green-300" />
+    </div>
+
+    <div className="absolute bottom-[24%] left-[10%] opacity-[0.18] animate-drift-reverse">
+      <Bird className="w-12 h-12 md:w-16 md:h-16 text-orange-300" />
+    </div>
+
+    <div className="absolute bottom-[14%] right-[8%] opacity-[0.22] animate-float-slow">
+      <Moon className="w-12 h-12 md:w-16 md:h-16 text-blue-200" />
+    </div>
+
+    <div className="absolute bottom-[30%] left-1/2 -translate-x-1/2 opacity-[0.18] animate-twinkle-soft">
+      <Sparkles className="w-14 h-14 md:w-16 md:h-16 text-cyan-200" />
+    </div>
+  </div>
+);
+
 type MatutinaDay = {
   id: number;
   title: string;
@@ -325,11 +357,71 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#E0F7FA] font-sans text-[#263238] flex flex-col items-center select-none overflow-x-hidden">
       <style>{`
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        .animate-float { animation: float 3s ease-in-out infinite; }
-        .adventure-card { border-radius: 32px; box-shadow: 0 8px 0 #B2EBF2; transition: all 0.2s; }
-        .adventure-card:active { transform: translateY(4px); box-shadow: 0 4px 0 #B2EBF2; }
-      `}</style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+
+  @keyframes floatSlow {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(-12px) translateX(6px); }
+  }
+
+  @keyframes floatReverse {
+    0%, 100% { transform: translateY(0px) translateX(0px); }
+    50% { transform: translateY(10px) translateX(-8px); }
+  }
+
+  @keyframes drift {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(12px); }
+  }
+
+  @keyframes driftReverse {
+    0%, 100% { transform: translateX(0px); }
+    50% { transform: translateX(-12px); }
+  }
+
+  @keyframes twinkleSoft {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50% { opacity: 0.35; transform: scale(1.08); }
+  }
+
+  .animate-float { animation: float 3s ease-in-out infinite; }
+  .animate-float-slow { animation: floatSlow 6s ease-in-out infinite; }
+  .animate-float-reverse { animation: floatReverse 7s ease-in-out infinite; }
+  .animate-drift { animation: drift 8s ease-in-out infinite; }
+  .animate-drift-reverse { animation: driftReverse 9s ease-in-out infinite; }
+  .animate-twinkle-soft { animation: twinkleSoft 4s ease-in-out infinite; }
+
+  .adventure-card {
+    border-radius: 32px;
+    box-shadow: 0 8px 0 #B2EBF2;
+    transition: all 0.2s;
+  }
+
+  .adventure-card:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0 #B2EBF2;
+  }
+
+  .mission-card {
+    border-radius: 32px;
+    box-shadow: 0 10px 0 rgba(178, 235, 242, 0.85);
+    transition: transform 0.22s ease, box-shadow 0.22s ease, filter 0.22s ease;
+  }
+
+  .mission-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 0 rgba(178, 235, 242, 0.95);
+    filter: brightness(1.01);
+  }
+
+  .mission-card:active {
+    transform: translateY(3px);
+    box-shadow: 0 6px 0 rgba(178, 235, 242, 0.85);
+  }
+`}</style>
 
       {/* --- PANTALLA BIENVENIDA --- */}
       {view === 'welcome' && (
@@ -369,7 +461,7 @@ const App = () => {
 
       {/* --- CABECERA --- */}
       {view !== 'welcome' && (
-        <header className="w-full max-w-md bg-white/80 backdrop-blur-md border-b-4 border-[#B2EBF2] p-4 flex justify-between items-center sticky top-0 z-50">
+        <header className={`w-full ${view === 'map' ? 'max-w-6xl' : 'max-w-md'} bg-white/80 backdrop-blur-md border-b-4 border-[#B2EBF2] p-4 flex justify-between items-center sticky top-0 z-50`}>
           <button onClick={() => setView(view === 'map' ? 'welcome' : 'map')} className="p-2 bg-[#E0F2F1] rounded-full shadow-sm text-[#00796B]">
             <ArrowLeft className="w-6 h-6" />
           </button>
@@ -383,38 +475,103 @@ const App = () => {
         </header>
       )}
 
-      <main className="w-full max-w-md flex-1 p-6 pb-24">
+      <main className={`w-full flex-1 p-6 pb-24 transition-all ${view === 'map' ? 'max-w-6xl' : 'max-w-md'}`}>
         
         {/* --- MAPA DE AVENTURA --- */}
-        {view === 'map' && (
-          <div className="flex flex-col items-center gap-12 py-8">
-            <div className="bg-white/90 p-4 rounded-[40px] border-2 border-[#80DEEA] text-center shadow-sm w-full">
-              <h2 className="text-xl font-black text-[#00796B] flex items-center justify-center gap-2 uppercase tracking-tight">
-                <Map className="text-[#009688]" /> Mi Gran Expedición
-              </h2>
+{view === 'map' && (
+  <div className="relative min-h-[70vh] py-4 md:py-8">
+    <MapAmbientDecor />
+
+    <div className="relative z-10 flex flex-col gap-6">
+      <div className="bg-white/90 p-5 md:p-6 rounded-[40px] border-2 border-[#80DEEA] text-center shadow-sm w-full">
+        <h2 className="text-xl md:text-2xl font-black text-[#00796B] flex items-center justify-center gap-2 uppercase tracking-tight">
+          <Map className="text-[#009688]" /> Mi Gran Expedición
+        </h2>
+        <p className="text-sm md:text-base text-[#546E7A] font-semibold mt-2">
+          Elige una misión del día y explora la creación y los milagros de Dios.
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-white/90 rounded-[32px] border-2 border-[#B2EBF2] p-5 shadow-sm">
+          <p className="text-xs font-black text-[#80DEEA] uppercase tracking-widest">Ruta</p>
+          <h3 className="text-2xl font-black text-[#00796B] mt-2">15 misiones para descubrir</h3>
+          <p className="text-sm text-[#546E7A] font-semibold mt-2">
+            Cada día tiene un título, un versículo y una cita bíblica con audio.
+          </p>
+        </div>
+
+        <div className="bg-white/90 rounded-[32px] border-2 border-[#B2EBF2] p-5 shadow-sm">
+          <p className="text-xs font-black text-[#80DEEA] uppercase tracking-widest">Progreso</p>
+          <div className="flex items-center justify-between mt-3">
+            <div>
+              <p className="text-3xl font-black text-[#00796B]">{stars}</p>
+              <p className="text-sm text-[#546E7A] font-bold">Estrellas ganadas</p>
             </div>
-            
-            <div className="relative w-full flex flex-col items-center gap-16">
-              <div className="absolute top-0 bottom-0 w-3 bg-[#B2EBF2] rounded-full border-4 border-white shadow-inner"></div>
-              
-              {MATUTINA_DATA.map((day, idx) => (
-                <div key={day.id} className="relative z-10 flex flex-col items-center">
-                  <button
-                    onClick={() => startLesson(day)}
-                    className="w-24 h-24 bg-white border-4 rounded-[40px] adventure-card flex items-center justify-center group active:scale-95 transition-all shadow-md"
-                    style={{ borderColor: day.accent }}
-                  >
-                    <div className="group-hover:scale-110 transition-transform">{day.icon}</div>
-                  </button>
-                  <div className="mt-4 bg-[#00796B] text-white px-5 py-1 rounded-full font-black text-xs shadow-md">
-                    DÍA {day.id}
-                  </div>
-                  <div className="absolute -left-12 top-0 opacity-10"><Footprints className="w-10 h-10 rotate-12" /></div>
-                </div>
-              ))}
+            <div className="w-16 h-16 rounded-[24px] bg-[#FFF9C4] border-2 border-[#FBC02D] flex items-center justify-center shadow-sm">
+              <Trophy className="w-8 h-8 text-[#FBC02D]" />
             </div>
           </div>
-        )}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 pb-28">
+        {MATUTINA_DATA.map((day) => (
+          <button
+            key={day.id}
+            onClick={() => startLesson(day)}
+            className="mission-card group relative overflow-hidden bg-white/95 border-2 border-[#B2EBF2] p-5 md:p-6 text-left"
+          >
+            <div
+              className="absolute inset-0 opacity-[0.06]"
+              style={{
+                background: `linear-gradient(135deg, ${day.accent} 0%, transparent 62%)`
+              }}
+            />
+
+            <div className="absolute -right-6 -top-6 opacity-10 scale-125 pointer-events-none animate-float-slow">
+              <DayIllustration id={day.id} />
+            </div>
+
+            <div className="relative flex items-start gap-4">
+              <div
+                className="w-20 h-20 shrink-0 bg-white rounded-[28px] border-[3px] flex items-center justify-center shadow-sm"
+                style={{ borderColor: day.accent }}
+              >
+                {day.icon}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <div className="inline-flex items-center rounded-full bg-[#00796B] text-white px-4 py-1 text-xs font-black shadow-md">
+                  DÍA {day.id}
+                </div>
+
+                <h3 className="mt-3 text-lg md:text-xl font-black text-[#263238] leading-tight">
+                  {day.title}
+                </h3>
+
+                <p className="mt-2 text-sm text-[#546E7A] font-semibold leading-snug">
+                  {day.story}
+                </p>
+              </div>
+            </div>
+
+            <div className="relative mt-5 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-[#009688] font-black text-sm uppercase tracking-wide">
+                <Compass className="w-4 h-4" />
+                Explorar
+              </div>
+
+              <div className="w-11 h-11 rounded-full bg-[#E0F7FA] flex items-center justify-center shadow-inner group-hover:translate-x-1 transition-transform">
+                <Telescope className="w-5 h-5 text-[#009688]" />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
 
         {/* --- ESTUDIO / GRANDES BOTONES --- */}
         {view === 'study' && currentDay && (
@@ -514,7 +671,7 @@ const App = () => {
 
       {/* --- NAV INFERIOR --- */}
       {view === 'map' && (
-        <footer className="w-full max-w-md bg-white border-t-4 border-[#B2EBF2] p-4 fixed bottom-0 z-40 flex justify-around items-center rounded-t-[48px] shadow-2xl">
+        <footer className="w-full max-w-6xl bg-white border-t-4 border-[#B2EBF2] p-4 fixed bottom-0 z-40 flex justify-around items-center rounded-t-[48px] shadow-2xl">
           <button className="flex flex-col items-center gap-1 text-[#009688]">
             <Map className="w-8 h-8" />
             <span className="text-[10px] font-black uppercase tracking-widest">Mapa</span>
