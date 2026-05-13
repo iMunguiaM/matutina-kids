@@ -26,6 +26,37 @@ const speakLatam = (text: string) => {
   }
 };
 
+type MatutinaAudioType = 'titulo' | 'versiculo' | 'cita';
+
+let currentNarrationAudio: HTMLAudioElement | null = null;
+
+const playMatutinaAudio = (
+  dayId: number,
+  audioType: MatutinaAudioType,
+  fallbackText: string
+) => {
+  window.speechSynthesis?.cancel();
+
+  if (currentNarrationAudio) {
+    currentNarrationAudio.pause();
+    currentNarrationAudio.currentTime = 0;
+  }
+
+  const day = String(dayId).padStart(2, '0');
+  const audioUrl = `${import.meta.env.BASE_URL}audio/dia-${day}-${audioType}.mp3`;
+  const audio = new Audio(audioUrl);
+
+  currentNarrationAudio = audio;
+
+  audio.onerror = () => {
+    speakLatam(fallbackText);
+  };
+
+  audio.play().catch(() => {
+    speakLatam(fallbackText);
+  });
+};
+
 // --- EFECTOS DE SONIDO ---
 const playAdventureSfx = (type: 'success' | 'pop') => {
   const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -401,7 +432,7 @@ const App = () => {
             <div className="space-y-4">
               {/* BOTÓN TÍTULO */}
               <button 
-                onClick={() => { speakLatam(`Día ${currentDay.id}, Título: ${currentDay.title}`); finishStep(0); }}
+                onClick={() => { playMatutinaAudio(currentDay.id, 'titulo', `Día ${currentDay.id}, Título: ${currentDay.title}`); finishStep(0); }}
                 className={`w-full p-7 flex items-center justify-between rounded-[40px] border-b-8 transition-all active:translate-y-1 active:border-b-4 ${completedSteps.includes(0) ? 'bg-[#C8E6C9] border-[#81C784]' : 'bg-white border-[#B2EBF2]'}`}
               >
                 <div className="text-left">
@@ -413,7 +444,7 @@ const App = () => {
 
               {/* BOTÓN VERSÍCULO */}
               <button 
-                onClick={() => { speakLatam(`Versículo: ${currentDay.verse}`); finishStep(1); }}
+                onClick={() => { playMatutinaAudio(currentDay.id, 'versiculo', `Versículo: ${currentDay.verse}`); finishStep(1); }}
                 className={`w-full p-7 flex items-center justify-between rounded-[40px] border-b-8 transition-all active:translate-y-1 active:border-b-4 ${completedSteps.includes(1) ? 'bg-[#C8E6C9] border-[#81C784]' : 'bg-white border-[#B2EBF2]'}`}
               >
                 <div className="text-left">
@@ -425,7 +456,7 @@ const App = () => {
 
               {/* BOTÓN CITA */}
               <button 
-                onClick={() => { speakLatam(`Cita: ${currentDay.citation}`); finishStep(2); }}
+                onClick={() => { playMatutinaAudio(currentDay.id, 'cita', `Cita: ${currentDay.citation}`); finishStep(2); }}
                 className={`w-full p-7 flex items-center justify-between rounded-[40px] border-b-8 transition-all active:translate-y-1 active:border-b-4 ${completedSteps.includes(2) ? 'bg-[#C8E6C9] border-[#81C784]' : 'bg-white border-[#B2EBF2]'}`}
               >
                 <div className="text-left">
